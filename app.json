@@ -1,0 +1,28 @@
+{
+  "id": "4CE7D1EB-58D7-4CFF-942F-4D403D5DFF89",
+  "name": "BDEShippingLabels",
+  "publisher": "BDE",
+  "version": "1.0.0.0",
+  "brief": "",
+  "description": "",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "18.0.0.0",
+  "idRanges": [
+    {
+      "from": 70389525 ,
+      "to": 70389530
+    }
+  ],
+  "resourceExposurePolicy": {"allowDebugging": false},
+  "runtime": "10.0",
+  "features": [
+    "NoImplicitWith"
+  ]
+}
