@@ -1,4 +1,5 @@
-page 70389526 BDELabelsSubform
+page 50101 BDELabelsSubform
+//page 70389541 BDELabelsSubform
 {
     Caption = 'Labels';
     PageType = ListPart;
@@ -17,11 +18,11 @@ page 70389526 BDELabelsSubform
 
                 field("Document Type"; Rec."Document Type")
                 {
-
+                    ApplicationArea = All;
                 }
                 field("Document No."; Rec."Document No.")
                 {
-
+                    ApplicationArea = All;
                 }
             }
             repeater(Lines)

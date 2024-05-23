@@ -1,4 +1,6 @@
-pageextension 70389525 "BDELabelsExtension" extends "Sales Order"
+pageextension 50100 "BDELabelsExtension" extends "Sales Order"
+
+//pageextension 70389540 "BDELabelsExtension" extends "Sales Order"
 {
     layout
     {
@@ -36,7 +38,8 @@ pageextension 70389525 "BDELabelsExtension" extends "Sales Order"
                         lbltbl.Insert()
                     end;
                     //lbl.PageOpen(Rec."No.");
-                    lbl.SetTableView(lbltbl);
+                    lbl.SetRecord(lbltbl);
+                    //lbl.SetTableView(lbltbl);
 
                     lbl.Run();
                     //Message('My message');

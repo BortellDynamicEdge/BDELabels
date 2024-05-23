@@ -9,7 +9,7 @@
             "server": "http://bdedemo:8080/BC210",
             "serverInstance": "BC210",
             "authentication": "Windows",
-            "startupObjectId": 50109,
+            "startupObjectId": 50106,
             "startupObjectType": "Page",
             "breakOnError": "All",
             "launchBrowser": true,
@@ -17,6 +17,19 @@
             "enableSqlInformationDebugger": true,
             "tenant": "default",
             "usePublicURLFromServer": true
-        }
+        },
+        // {
+        //     "type": "al",
+        //     "request": "launch",
+        //     "name": "Production",
+        //     "environmentType": "Production",
+        //     "environmentName": "Production",
+        //     "tenant": "f6b3e203-23c5-4fd0-8660-10b5dd598d2b",
+        //     "breakOnError": true,
+        //     "launchBrowser": true,
+        //     "enableLongRunningSqlStatements": true,
+        //     "enableSqlInformationDebugger": true,
+        //     "schemaUpdateMode": "Synchronize"
+        // } 
     ]
 }

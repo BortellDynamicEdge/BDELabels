@@ -1,4 +1,6 @@
-report 70389525 BDELabelsReport
+report 50100 BDELabelsReport
+
+//report 70389540 BDELabelsReport
 {
     Caption = 'BDELabelsReport';
     RDLCLayout = './layouts/BDELabels.rdl';

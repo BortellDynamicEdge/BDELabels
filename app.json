@@ -15,12 +15,14 @@
   "platform": "1.0.0.0",
   "application": "18.0.0.0",
   "idRanges": [
+
     {
-      "from": 70389525 ,
-      "to": 70389530
+      "from": 50100 ,
+      "to": 50150
     }
   ],
-  "resourceExposurePolicy": {"allowDebugging": false},
+  "resourceExposurePolicy": {"applyToDevExtension": true , "allowDebugging": true},
+  
   "runtime": "10.0",
   "features": [
     "NoImplicitWith"

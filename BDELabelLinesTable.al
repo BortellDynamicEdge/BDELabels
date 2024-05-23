@@ -1,4 +1,5 @@
-table 70389526 "BDELabelLines"
+table 50101 "BDELabelLines"
+//table 70389541 "BDELabelLines"
 {
     Caption = 'BDE Labels';
     DataCaptionFields = "Document No.";

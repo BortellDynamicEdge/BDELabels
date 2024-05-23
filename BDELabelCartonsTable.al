@@ -1,4 +1,6 @@
-table 70389527 "BDELabelCartons"
+
+table 50103 "BDELabelCartons"
+//table 70389542 "BDELabelCartons"
 {
     Caption = 'BDE Label Carton Sizes';
     DataCaptionFields = "Document No.";

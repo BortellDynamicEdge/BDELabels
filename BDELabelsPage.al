@@ -1,4 +1,5 @@
-page 70389525 "BDE Labels"
+page 50100 "BDE Labels"
+//page 70389540 "BDE Labels"
 {
     Caption = 'BDE Labels';
     PageType = Document;
@@ -89,6 +90,7 @@ page 70389525 "BDE Labels"
             {
                 ApplicationArea = All;
                 Caption = 'Print';
+                InFooterBar = true;
 
                 trigger OnAction();
                 begin
@@ -151,6 +153,8 @@ page 70389525 "BDE Labels"
         labelsallocated: Decimal;
 
         labelreport: Report BDELabelsReport;
+
+        lblpage: Page "BDE Labels";
 
     procedure DeleteLabels()
     begin
@@ -255,6 +259,9 @@ page 70389525 "BDE Labels"
                 lblheader.OrderCartonCount := totalcount;
                 lblheader.Modify()
             end;
+
+            lblpage.Update(true);
+
         end;
     end;
 }
