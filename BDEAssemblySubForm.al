@@ -3,8 +3,10 @@ page 50105 BDEAssemblySubForm
     ApplicationArea = All;
     Caption = 'BDE Assembly Items';
     PageType = ListPart;
+    PopulateAllFields = true;
     SourceTable = BDEAssemblyLines;
     UsageCategory = Lists;
+    AutoSplitKey = true;
 
     layout
     {
@@ -18,17 +20,19 @@ page 50105 BDEAssemblySubForm
                 }
                 field("Item No"; Rec."Item No")
                 {
+                    NotBlank = true;
                     ToolTip = 'Specifies the value of the Item Carton Number field.';
                 }
                 field(UofM; Rec.UofM)
                 {
+                    NotBlank = true;
                     ToolTip = 'Specifies the value of the Unit Of Measure field.';
                 }
                 field("Item Description"; Rec."Item Description")
                 {
                     ToolTip = 'Specifies the value of the Item Description field.';
                 }
-                field("Qunatity"; Rec."Quantity")
+                field("Quantity"; Rec."Quantity")
                 {
                     ToolTip = 'Specifies the value of the Output Item Weight per each field.';
                 }
