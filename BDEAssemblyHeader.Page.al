@@ -65,8 +65,26 @@ page 50102 BDEAssemblyPage
                 UpdatePropagation = Both;
             }
         }
-    }
 
+    }
+    actions
+    {
+
+        area(Processing)
+        {
+
+            action(Post)
+            {
+                ApplicationArea = All;
+                Caption = 'Post';
+
+                trigger OnAction();
+                begin
+                    PostAssembly();
+                end;
+            }
+        }
+    }
     var
         BOM: Record BDEAssemblyHeader;
 
@@ -87,5 +105,182 @@ page 50102 BDEAssemblyPage
         // BOM.Insert()
     end;
 
+    procedure PostAssembly()
+    var
+        itembatch: Record "Item Journal Batch";
+        assemblyline: Record BDEAssemblyLines;
+        TotalCost: Decimal;
 
+    begin
+        journaltemplate := 'ITEM';
+        batchname := 'ASSEMBLY';
+        linenumber := 0;
+        lotnumber := FORMAT(WorkDate(), 0, '<Year4><Month,2><Day,2>');
+
+        itembatch.Init();
+        itembatch."Journal Template Name" := journaltemplate;
+        itembatch.Name := batchname;
+        if not itembatch.Get(itembatch."Journal Template Name", itembatch.Name) then begin
+            //itemjournalbatch."Item Tracking on Lines" := 1;
+            itembatch.Insert();
+            itembatch.Modify(true);
+        end;
+
+
+        assemblyline.Init();
+        assemblyline.Reset();
+        assemblyline.SetRange("Assembly No.", Rec."Assembly No.");
+        TotalCost := 0;
+
+        // If assembly then lines are negative and header is positive
+        if Rec."Assembly Type " = BDEAssemblyType::"Assembly" then
+            sourcetype := 1
+        else
+            sourcetype := 2;
+
+        if (assemblyline.FindSet()) then begin
+            // Initialise ledger entry defaults
+
+            repeat
+                CreateJournalLine(assemblyline."Item No", assemblyline.UofM, assemblyline.Quantity * Rec."Production Quantity", assemblyline."Unit Cost" + assemblyline."Labour Cost");
+            until (assemblyline.Next() = 0);
+
+            // If assembly then lines are negative and header is positive
+            if Rec."Assembly Type " = BDEAssemblyType::"Assembly" then
+                sourcetype := 2
+            else
+                sourcetype := 1;
+            CreateJournalLine(Rec."Item Number", Rec."UofM", Rec."Quantity" * Rec."Production Quantity", assemblyline."Unit Cost" + assemblyline."Labour Cost");
+        end;
+    end;
+
+    procedure CreateJournalLine(itemno: code[20]; uofm: code[10]; quantity: Decimal; cost: Decimal)
+    var
+        item: Record Item;
+        itemuofm: Record "Item Unit of Measure";
+        itemline: Record "Item Journal Line";
+        qtybase: Decimal;
+        coysetup: Record "Company Information";
+
+    begin
+        if not coysetup.Get() then
+            Error('Inventorysetup Missing');
+        locationcode := coysetup."Location Code";
+        if not item.Get(itemno) then
+            Error('Item Number Missing');
+        if not itemuofm.Get(itemno, uofm) then
+            Error('Item Unit of measure missing');
+
+        itemline."Journal Template Name" := journaltemplate;
+        itemline."Journal Batch Name" := batchname;
+        itemline."Document No." := 'MGTEST';
+
+        // Only get the line seq for the first time as the new records are in a buffer and dont get committed untill the end of the process
+        if linenumber = 0 then
+            GetLineNumber()
+        else
+            linenumber += 10000;
+        itemline."Line No." := linenumber;
+        itemline.Insert();
+        //itemline."Line No." := assemblyline."Line No.";
+        itemline."Item No." := itemno;
+        itemline."Unit of Measure Code" := uofm;
+        itemline."Posting Date" := WorkDate();
+        itemline."Document Date" := WorkDate();
+
+        // sourcetype 1 = Negative  Adjustment , 2 =  Postitive Adjustment used to differentiate header and line 
+        if sourcetype = 1 then begin
+            itemline."Entry Type" := "Item Ledger Entry Type"::"Negative Adjmt.";
+            itemline.Type := "Capacity Type Journal"::" ";
+        end
+        else begin
+            itemline."Entry Type" := "Item Ledger Entry Type"::"Positive Adjmt.";
+            itemline.Type := "Capacity Type Journal"::" ";
+        end;
+        itemline.Description := item.Description;
+        itemline."Location Code" := locationcode;
+        itemline."Inventory Posting Group" := item."Inventory Posting Group";
+        itemline."Qty. per Unit of Measure" := itemuofm."Qty. per Unit of Measure";
+        qtybase := quantity * itemuofm."Qty. per Unit of Measure";
+        itemline.Quantity := quantity;
+        itemline."Quantity (Base)" := qtybase;
+        itemline."Invoiced Quantity" := quantity;
+        itemline."Invoiced Qty. (Base)" := qtybase;
+        itemline."Unit Amount" := cost;
+        itemline."Unit Cost" := cost;
+        itemline.Amount := cost * quantity;
+        itemline."Source Code" := 'ITEMJNL';
+        //itemline."Source Type" := "Analysis Source Type"::Item;
+        itemline."Gen. Prod. Posting Group" := item."Gen. Prod. Posting Group";
+
+        //itemline."Lot No." := lotnumber;
+        itemline.Modify(true);
+        if item."Item Tracking Code" <> '' then
+            CreateReservationEntry(itemline."Item No.", quantity, qtybase, itemuofm."Qty. per Unit of Measure");
+    end;
+
+    procedure GetLineNumber()
+    var
+        journalline: Record "Item Journal Line";
+
+    begin
+        journalline.Reset();
+        journalline.SetRange("Journal Template Name", journaltemplate);
+        journalline.SetRange("Journal Batch Name", batchname);
+        if (journalline.FindLast()) then
+            linenumber := journalline."Line No." + 10000
+        else
+            linenumber := 10000;
+
+    end;
+
+    procedure CreateReservationEntry(item: code[20]; qty: Decimal; qtybase: Decimal; qtyuofm: Decimal)
+    var
+        reservation: Record "Reservation Entry";
+    begin
+        reservation."Entry No." := reservation.GetLastEntryNo() + 1;
+        // 1 = negative adjustment , 2= positive adjustment
+        if sourcetype = 1 then begin
+            reservation.Positive := false;
+            reservation."Source Subtype" := 3;
+            reservation."Shipment Date" := WorkDate();
+            reservation."Quantity (Base)" := -qtybase;
+            reservation.Quantity := -qty;
+            reservation."Qty. to Handle (Base)" := -qtybase;
+            reservation."Qty. to Invoice (Base)" := -qtybase;
+        end
+        else begin
+            reservation.Positive := true;
+            reservation."Source Subtype" := 2;
+            reservation."Quantity (Base)" := qtybase;
+            reservation."Expected Receipt Date" := WorkDate();
+            reservation.Quantity := qty;
+            reservation."Qty. to Handle (Base)" := qtybase;
+            reservation."Qty. to Invoice (Base)" := qtybase;
+        end;
+        reservation.Insert();
+        reservation."Qty. per Unit of Measure" := qtyuofm;
+        reservation."Item No." := item;
+        reservation."Location Code" := locationcode;
+        reservation."Item Tracking" := "Item Tracking Entry Type"::"Lot No.";
+        reservation."Lot No." := lotnumber;
+        reservation."Reservation Status" := "Reservation Status"::Prospect;
+        reservation."Creation Date" := WorkDate();
+        reservation."Source Type" := 83;
+        reservation."Source ID" := journaltemplate;
+        reservation."Source Batch Name" := batchname;
+        reservation."Source Ref. No." := linenumber;
+        reservation."Expected Receipt Date" := WorkDate();
+
+        if not reservation.Modify(true) then
+            Error('Failed to write reservation entry');
+    end;
+
+    var
+        journaltemplate: code[20];
+        batchname: code[20];
+        linenumber: Integer;
+        sourcetype: Integer;
+        locationcode: code[20];
+        lotnumber: code[50];
 }

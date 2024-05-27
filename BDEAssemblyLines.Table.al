@@ -46,10 +46,12 @@ table 50106 "BDEAssemblyLines"
         field(7; "Quantity"; Decimal)
         {
             Caption = 'Quantity/Weight';
+            DecimalPlaces = 0 : 5;
         }
         field(8; "Unit Cost"; Decimal)
         {
             Caption = 'Unit Cost';
+            DecimalPlaces = 0 : 5;
         }
 
         field(9; "Labour Cost"; Decimal)

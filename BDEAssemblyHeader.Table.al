@@ -41,10 +41,12 @@ table 50105 "BDEAssemblyHeader"
         field(7; "Item Cost"; Decimal)
         {
             Caption = 'Item Cost';
+            DecimalPlaces = 0 : 5;
         }
         field(8; "Quantity"; Decimal)
         {
             Caption = 'Quantity/Weight';
+            DecimalPlaces = 0 : 5;
         }
         field(9; "Production Quantity"; Integer)
         {
