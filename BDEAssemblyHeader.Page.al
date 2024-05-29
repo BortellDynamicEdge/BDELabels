@@ -55,13 +55,20 @@ page 50102 BDEAssemblyPage
                 }
 
             }
+            group("Run Data")
+            {
+                field("Production Date"; ProductionDate)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Production Date';
+                    NotBlank = true;
+                    Tooltip = 'Specifies the date on which the production occurred.';
+                }
+            }
             part(BOMGrid; "BDEAssemblySubform")
             {
                 ApplicationArea = Basic, Suite;
-                // Editable = IsSalesLinesEditable;
-                //Enabled = IsSalesLinesEditable;
                 SubPageLink = "Assembly No." = FIELD("Assembly No.");
-
                 UpdatePropagation = Both;
             }
         }
@@ -69,7 +76,6 @@ page 50102 BDEAssemblyPage
     }
     actions
     {
-
         area(Processing)
         {
 
@@ -80,42 +86,33 @@ page 50102 BDEAssemblyPage
 
                 trigger OnAction();
                 begin
-                    PostAssembly();
+                    if (ProductionDate = 0D) then
+                        Message('Please select a production date.')
+                    else
+                        PostAssembly(ProductionDate);
                 end;
             }
         }
     }
     var
         BOM: Record BDEAssemblyHeader;
-
-    trigger OnAfterGetRecord()
-    begin
-        // label.Reset();
-        // label.SetRange("Document Type", Rec."Document Type");
-        // label.SetRange("Document No.", Rec."Document No.");
-        // if (label.FindSet() = false) then begin
-        //     Generatelbls();
-        // end;
-    end;
+        ProductionDate: Date;
 
     trigger OnOpenPage()
     begin
-        // BOM.Init();
-        // BOM."BOM No." := '1222';
-        // BOM.Insert()
+        ProductionDate := Today();  // default production date to today
     end;
 
-    procedure PostAssembly()
+    procedure PostAssembly(prodDate: Date)
     var
         itembatch: Record "Item Journal Batch";
         assemblyline: Record BDEAssemblyLines;
         TotalCost: Decimal;
-
     begin
         journaltemplate := 'ITEM';
         batchname := 'ASSEMBLY';
         linenumber := 0;
-        lotnumber := FORMAT(WorkDate(), 0, '<Year4><Month,2><Day,2>');
+        lotnumber := FORMAT(prodDate, 0, '<Year4><Month,2><Day,2>');
 
         itembatch.Init();
         itembatch."Journal Template Name" := journaltemplate;
@@ -142,7 +139,7 @@ page 50102 BDEAssemblyPage
             // Initialise ledger entry defaults
 
             repeat
-                CreateJournalLine(assemblyline."Item No", assemblyline.UofM, assemblyline.Quantity * Rec."Production Quantity", assemblyline."Unit Cost" + assemblyline."Labour Cost");
+                CreateJournalLine(assemblyline."Item No", assemblyline.UofM, assemblyline.Quantity * Rec."Production Quantity", assemblyline."Unit Cost" + assemblyline."Labour Cost", prodDate);
             until (assemblyline.Next() = 0);
 
             // If assembly then lines are negative and header is positive
@@ -150,11 +147,11 @@ page 50102 BDEAssemblyPage
                 sourcetype := 2
             else
                 sourcetype := 1;
-            CreateJournalLine(Rec."Item Number", Rec."UofM", Rec."Quantity" * Rec."Production Quantity", assemblyline."Unit Cost" + assemblyline."Labour Cost");
+            CreateJournalLine(Rec."Item Number", Rec."UofM", Rec."Quantity" * Rec."Production Quantity", assemblyline."Unit Cost" + assemblyline."Labour Cost", prodDate);
         end;
     end;
 
-    procedure CreateJournalLine(itemno: code[20]; uofm: code[10]; quantity: Decimal; cost: Decimal)
+    procedure CreateJournalLine(itemno: code[20]; uofm: code[10]; quantity: Decimal; cost: Decimal; prodDate: Date)
     var
         item: Record Item;
         itemuofm: Record "Item Unit of Measure";
@@ -185,8 +182,8 @@ page 50102 BDEAssemblyPage
         //itemline."Line No." := assemblyline."Line No.";
         itemline."Item No." := itemno;
         itemline."Unit of Measure Code" := uofm;
-        itemline."Posting Date" := WorkDate();
-        itemline."Document Date" := WorkDate();
+        itemline."Posting Date" := prodDate;
+        itemline."Document Date" := prodDate;
 
         // sourcetype 1 = Negative  Adjustment , 2 =  Postitive Adjustment used to differentiate header and line 
         if sourcetype = 1 then begin
@@ -216,7 +213,7 @@ page 50102 BDEAssemblyPage
         //itemline."Lot No." := lotnumber;
         itemline.Modify(true);
         if item."Item Tracking Code" <> '' then
-            CreateReservationEntry(itemline."Item No.", quantity, qtybase, itemuofm."Qty. per Unit of Measure");
+            CreateReservationEntry(itemline."Item No.", quantity, qtybase, itemuofm."Qty. per Unit of Measure", prodDate);
     end;
 
     procedure GetLineNumber()
@@ -234,7 +231,7 @@ page 50102 BDEAssemblyPage
 
     end;
 
-    procedure CreateReservationEntry(item: code[20]; qty: Decimal; qtybase: Decimal; qtyuofm: Decimal)
+    procedure CreateReservationEntry(item: code[20]; qty: Decimal; qtybase: Decimal; qtyuofm: Decimal; prodDate: Date)
     var
         reservation: Record "Reservation Entry";
     begin
@@ -243,7 +240,7 @@ page 50102 BDEAssemblyPage
         if sourcetype = 1 then begin
             reservation.Positive := false;
             reservation."Source Subtype" := 3;
-            reservation."Shipment Date" := WorkDate();
+            reservation."Shipment Date" := prodDate;
             reservation."Quantity (Base)" := -qtybase;
             reservation.Quantity := -qty;
             reservation."Qty. to Handle (Base)" := -qtybase;
@@ -253,7 +250,7 @@ page 50102 BDEAssemblyPage
             reservation.Positive := true;
             reservation."Source Subtype" := 2;
             reservation."Quantity (Base)" := qtybase;
-            reservation."Expected Receipt Date" := WorkDate();
+            reservation."Expected Receipt Date" := prodDate;
             reservation.Quantity := qty;
             reservation."Qty. to Handle (Base)" := qtybase;
             reservation."Qty. to Invoice (Base)" := qtybase;
@@ -265,12 +262,12 @@ page 50102 BDEAssemblyPage
         reservation."Item Tracking" := "Item Tracking Entry Type"::"Lot No.";
         reservation."Lot No." := lotnumber;
         reservation."Reservation Status" := "Reservation Status"::Prospect;
-        reservation."Creation Date" := WorkDate();
+        reservation."Creation Date" := prodDate;
         reservation."Source Type" := 83;
         reservation."Source ID" := journaltemplate;
         reservation."Source Batch Name" := batchname;
         reservation."Source Ref. No." := linenumber;
-        reservation."Expected Receipt Date" := WorkDate();
+        reservation."Expected Receipt Date" := prodDate;
 
         if not reservation.Modify(true) then
             Error('Failed to write reservation entry');
