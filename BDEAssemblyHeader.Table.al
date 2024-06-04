@@ -2,12 +2,9 @@ table 50105 "BDEAssemblyHeader"
 {
     Caption = 'BDE Assembly Header';
     DataCaptionFields = "Assembly No.";
-    //DrillDownPageID = "Chart of Accounts";
-    //LookupPageID = "G/L Account List";
 
     fields
     {
-
         field(1; "Assembly No."; Code[20])
         {
             Caption = 'No.';
@@ -17,18 +14,15 @@ table 50105 "BDEAssemblyHeader"
         {
             Caption = 'Type';
         }
-
         field(3; "Assembly Description"; Text[100])
         {
             Caption = 'Description';
         }
-
         field(4; "Item Number"; Code[20])
         {
             Caption = 'Item Number';
             TableRelation = Item; // WHERE("No." = "Item Number") 
         }
-
         field(5; "UofM"; Code[10])
         {
             Caption = 'Unit';
@@ -51,18 +45,9 @@ table 50105 "BDEAssemblyHeader"
         field(9; "Production Quantity"; Integer)
         {
             Caption = 'Production Quantity';
+            ObsoleteState = Pending;
         }
-
-        // field(10; "Wasteage"; Decimal)
-        // {
-        //     Caption = 'Wasteage Weight';
-        // }
-        // field(11; "Batch Number"; Code[20])
-        // {
-        //     Caption = 'Assembly Batch number';
-        // }
     }
-
     keys
     {
         key(Key1; "Assembly No.")
@@ -70,7 +55,6 @@ table 50105 "BDEAssemblyHeader"
             Clustered = true;
         }
     }
-
     fieldgroups
     {
         // Add changes to field groups here

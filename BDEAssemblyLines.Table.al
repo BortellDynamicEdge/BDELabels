@@ -3,8 +3,6 @@ table 50106 "BDEAssemblyLines"
 {
     Caption = 'BDE Assembly Lines';
     DataCaptionFields = "Assembly No.";
-    //DrillDownPageID = "Chart of Accounts";
-    //LookupPageID = "G/L Account List";
 
     fields
     {
