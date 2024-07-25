@@ -106,8 +106,9 @@ page 50100 "BDE Labels"
                 Caption = 'Carton Sizes';
 
                 trigger OnAction();
-                begin
 
+                begin
+                    cartpage.SetParameters(Rec."Document No.");
                     cartpage.RunModal();
                 end;
             }

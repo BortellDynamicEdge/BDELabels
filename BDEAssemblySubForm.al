@@ -14,10 +14,10 @@ page 50105 BDEAssemblySubForm
         {
             repeater(General)
             {
-                field("Usage Type"; Rec."Item Usage Type")
-                {
-                    ToolTip = 'Specifies the Item Usage Type.';
-                }
+                // field("Usage Type"; Rec."Item Usage Type")
+                // {
+                //     ToolTip = 'Specifies the Item Usage Type.';
+                // }
                 field("Item No"; Rec."Item No")
                 {
                     NotBlank = true;
@@ -43,6 +43,10 @@ page 50105 BDEAssemblySubForm
                 field("Labour Cost"; Rec."Labour Cost")
                 {
                     ToolTip = 'Specifies the value of the Labour Cost field.';
+                }
+                field("Total Quantity"; Rec."Total Quantity")
+                {
+                    ToolTip = 'Specifies the Total Quantity (Dis)Assembled.';
                 }
             }
         }

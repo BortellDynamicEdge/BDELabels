@@ -35,10 +35,10 @@ page 50102 BDEAssemblyPage
                 {
                     ToolTip = 'Specifies the Unit of Measure.';
                 }
-                field("Usage Type"; Rec."Item Usage Type")
-                {
-                    ToolTip = 'Specifies the Item Usage Type.';
-                }
+                // field("Usage Type"; Rec."Item Usage Type")
+                // {
+                //     ToolTip = 'Specifies the Item Usage Type.';
+                // }
                 field("Quantity"; Rec."Quantity")
                 {
                     Caption = 'Quantity/Weight';
@@ -196,8 +196,8 @@ page 50102 BDEAssemblyPage
                 if not ItemUofM.Get(AssemblyLines."Item No", AssemblyLines.UofM) then
                     Error('Unable to retrieve unit of measure information for item "%1".', AssemblyLines."Item No");
 
-                if (Item."Item Tracking Code" <> '') then begin                                                                 // only attempt to find lot numbers if the item has some sort of item tracking specified
-                    QuantityRequired := (AssemblyLines.Quantity * ItemUofM."Qty. per Unit of Measure") * ProductionQuantity;    // convert from requested unit to quantity in base UoM as this is what is stored in the item ledger entry table
+                if (Item."Item Tracking Code" <> '') and (AssemblyLines."Total Quantity" <> 0) then begin                                                                 // only attempt to find lot numbers if the item has some sort of item tracking specified
+                    QuantityRequired := (AssemblyLines."Total Quantity" * ItemUofM."Qty. per Unit of Measure");    // convert from requested unit to quantity in base UoM as this is what is stored in the item ledger entry table
                     if not CreateLotAllocation(AssemblyLines."Assembly No.", AssemblyLines."Line No.", AssemblyLines."Item No", QuantityRequired) then begin
                         Error('Unable to allocate lots for item "%1".', AssemblyLines."Item No");
                         ClearAssemblyLots(Rec."Assembly No.");
@@ -275,6 +275,8 @@ page 50102 BDEAssemblyPage
         else begin
             ItemLine."Entry Type" := "Item Ledger Entry Type"::"Positive Adjmt.";
             ItemLine.Type := "Capacity Type Journal"::" ";
+            if (Item."Item Tracking Code" <> '') then
+                ItemLine."Expiration Date" := CalcDate(item."Expiration Calculation", ProductionDate);
         end;
         ItemLine.Description := Item.Description;
         ItemLine."Location Code" := LocationCode;
@@ -291,6 +293,8 @@ page 50102 BDEAssemblyPage
         ItemLine."Source Code" := 'ITEMJNL';
         //itemline."Source Type" := "Analysis Source Type"::Item;
         ItemLine."Gen. Prod. Posting Group" := Item."Gen. Prod. Posting Group";
+
+
 
         //itemline."Lot No." := lotnumber;
         ItemLine.Modify(true);
@@ -418,6 +422,8 @@ page 50102 BDEAssemblyPage
         ItemJournalBatch: Record "Item Journal Batch";
         NoMgt: Codeunit NoSeriesManagement;
         TotalCost: Decimal;
+    //ivpost: Codeunit "Item Jnl.-Post Batch";
+
     begin
         JournalTemplate := 'ITEM';
         BatchName := 'ASSEMBLY';
@@ -453,7 +459,7 @@ page 50102 BDEAssemblyPage
         if (AssemblyLine.FindSet()) then begin
             // create journal lines for each assembly line
             repeat
-                CreateJournalLine(DocumentNo, AssemblyLine."Line No.", AssemblyLine."Item No", AssemblyLine.UofM, AssemblyLine.Quantity * ProductionQuantity, AssemblyLine."Unit Cost" + AssemblyLine."Labour Cost", ProductionDate);
+                CreateJournalLine(DocumentNo, AssemblyLine."Line No.", AssemblyLine."Item No", AssemblyLine.UofM, AssemblyLine."Total Quantity", AssemblyLine."Unit Cost" + AssemblyLine."Labour Cost", ProductionDate);
             until (AssemblyLine.Next() = 0);
 
             // If assembly then lines are negative and header is positive
@@ -467,6 +473,7 @@ page 50102 BDEAssemblyPage
         else
             Error('Template "%1" does not define any assembly lines.', Rec."Assembly No.");
     end;
+
 
     // configures the filters required to retrieve assembly line data for a given assembly number.
     local procedure SetAssemblyLinesFilter(AssemblyNo: Code[20]; var AssemblyLines: Record BDEAssemblyLines)

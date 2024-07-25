@@ -19,7 +19,7 @@ table 50103 "BDELabelCartons"
         field(2; "Document No."; Code[20])
         {
             Caption = 'Document No.';
-            // TableRelation = "Sales Header"."No." WHERE("Document Type" = FIELD("Document Type"));
+            TableRelation = BDELabelHeader WHERE("Document Type" = FIELD("Document Type"), "Document No." = field("Document No."));
         }
         field(3; "Line No."; Integer)
         {

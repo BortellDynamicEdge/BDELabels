@@ -6,70 +6,77 @@ report 50100 BDELabelsReport
     RDLCLayout = './layouts/BDELabels.rdl';
     DefaultLayout = RDLC;
 
-
     dataset
     {
-        dataitem(BDELabelLines; BDELabelLines)
+        dataitem(BDELabelsHeader; BDELabelHeader)
         {
+            RequestFilterFields = "Document No.";
 
-            DataItemTableView = sorting("Document Type", "Document No.", "Line No.", ItemCartonNo);
-            //RequestFilterFields = "Document No.";
-
-            column(ItemNumber; ItemNumber)
-            {
-            }
-            column(ItemDescription; ItemDescription)
-            {
-            }
-            column(ItemCartonNo; ItemCartonNo)
-            {
-            }
-            column(ItemCartonCount; ItemCartonCount)
-            {
-            }
-            column(DocumentDate; DocumentDate)
-            {
-            }
-            column(BestBeforeDate; BestBeforeDate)
-            {
-            }
-            column(OrderCartonNo; OrderCartonNo)
-            {
-            }
-            column(Quantity; Quantity)
-            {
-            }
-            column(OrderQuantity; OrderQuantity)
+            column("DocumentType"; "Document Type")
             {
 
             }
-            column(UofM; UofM)
+            column("DocumentNo"; "Document No.")
+            {
+
+            }
+            column(OrderCartonCount; OrderCartonCount)
+            {
+
+            }
+            column(CustomerName; CustomerName)
             {
 
             }
 
-            dataitem(BDELabelsHeader; BDELabelHeader)
+            column(Reference; Reference)
             {
+
+            }
+            column(Run; Run)
+            {
+
+            }
+
+
+            dataitem(BDELabelLines; BDELabelLines)
+            {
+                DataItemTableView = sorting("Document Type", "Document No.", "Line No.", ItemCartonNo);
                 DataItemLink = "Document Type" = field("Document Type"), "Document No." = field("Document No.");
-                DataItemLinkReference = BDELabelLines;
 
-                column(OrderCartonCount; OrderCartonCount)
+                column(ItemNumber; ItemNumber)
+                {
+                }
+                column(ItemDescription; ItemDescription)
+                {
+                }
+                column(ItemCartonNo; ItemCartonNo)
+                {
+                }
+                column(ItemCartonCount; ItemCartonCount)
+                {
+                }
+                column(DocumentDate; DocumentDate)
+                {
+                }
+                column(BestBeforeDate; BestBeforeDate)
+                {
+                }
+                column(OrderCartonNo; OrderCartonNo)
+                {
+                }
+                column(Quantity; Quantity)
+                {
+                }
+                column(OrderQuantity; OrderQuantity)
                 {
 
                 }
-                column(CustomerName; CustomerName)
+                column(UofM; UofM)
                 {
 
                 }
 
-                column(Reference; Reference)
-                {
-
-                }
-                column(Run; Run)
-                {
-
-                }
             }
         }
     }

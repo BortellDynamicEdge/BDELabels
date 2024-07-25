@@ -705,6 +705,24 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   <DataSets>
     <DataSet Name="DataSet_Result">
       <Fields>
+        <Field Name="DocumentType">
+          <DataField>DocumentType</DataField>
+        </Field>
+        <Field Name="DocumentNo">
+          <DataField>DocumentNo</DataField>
+        </Field>
+        <Field Name="OrderCartonCount">
+          <DataField>OrderCartonCount</DataField>
+        </Field>
+        <Field Name="CustomerName">
+          <DataField>CustomerName</DataField>
+        </Field>
+        <Field Name="Reference">
+          <DataField>Reference</DataField>
+        </Field>
+        <Field Name="Run">
+          <DataField>Run</DataField>
+        </Field>
         <Field Name="ItemNumber">
           <DataField>ItemNumber</DataField>
         </Field>
@@ -740,18 +758,6 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
         </Field>
         <Field Name="UofM">
           <DataField>UofM</DataField>
-        </Field>
-        <Field Name="OrderCartonCount">
-          <DataField>OrderCartonCount</DataField>
-        </Field>
-        <Field Name="CustomerName">
-          <DataField>CustomerName</DataField>
-        </Field>
-        <Field Name="Reference">
-          <DataField>Reference</DataField>
-        </Field>
-        <Field Name="Run">
-          <DataField>Run</DataField>
         </Field>
       </Fields>
       <Query>

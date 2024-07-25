@@ -1,1 +1,1 @@
-﻿{"Added":[],"Modified":[{"Id":50100,"Kind":26,"Name":"BDELblPermissions.al","Namespace":""}],"Removed":[]}
+﻿{"Added":[],"Modified":[{"Id":50105,"Kind":12,"Name":"BDEAssemblySubForm","Namespace":""},{"Kind":106,"Name":"RequestOptionsPage","Namespace":""},{"Id":50102,"Kind":12,"Name":"BDEAssemblyPage","Namespace":""},{"Id":50106,"Kind":10,"Name":"BDEAssemblyLines","Namespace":""},{"Id":50100,"Kind":13,"Name":"BDELabelsReport","Namespace":""}],"Removed":[]}

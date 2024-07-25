@@ -56,7 +56,11 @@ table 50106 "BDEAssemblyLines"
         {
             Caption = 'Labour Cost';
         }
-
+        field(10; "Total Quantity"; Decimal)
+        {
+            Caption = '(Dis)Assembly Total';
+            DecimalPlaces = 0 : 5;
+        }
     }
 
     keys

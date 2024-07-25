@@ -18,19 +18,19 @@
             "tenant": "default",
             "usePublicURLFromServer": true,
         },
-        {
-            "name": "G&T Chickens Prod",
-            "type": "al",
-            "request": "launch",
-            "environmentType": "Production",
-            "environmentName": "Production",
-            "tenant": "f6b3e203-23c5-4fd0-8660-10b5dd598d2b",
-            "breakOnError": true,
-            "launchBrowser": true,
-            "enableLongRunningSqlStatements": true,
-            "enableSqlInformationDebugger": true,
-            "schemaUpdateMode": "Synchronize"
-        }, 
+        // {
+        //     "name": "G&T Chickens Prod",
+        //     "type": "al",
+        //     "request": "launch",
+        //     "environmentType": "Production",
+        //     "environmentName": "Production",
+        //     "tenant": "f6b3e203-23c5-4fd0-8660-10b5dd598d2b",
+        //     "breakOnError": true,
+        //     "launchBrowser": true,
+        //     "enableLongRunningSqlStatements": true,
+        //     "enableSqlInformationDebugger": true,
+        //     "schemaUpdateMode": "Synchronize"
+        // }, 
 
         // {
         //     "type": "al",

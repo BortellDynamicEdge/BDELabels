@@ -6,8 +6,11 @@ page 50103 BDELabelCartons
     PageType = Worksheet;
     SourceTable = BDELabelCartons;
 
+    //SourceTableView = WHERE("Document No." = CONST('1051'));
+
     layout
     {
+
         area(content)
         {
             repeater(General)
@@ -27,4 +30,18 @@ page 50103 BDELabelCartons
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+
+    end;
+
+    procedure SetParameters(docnumber: code[20])
+    begin
+        DocumementNumberFilter := docnumber;
+        Rec.SetRange("Document No.", docnumber);
+    end;
+
+    var
+        DocumementNumberFilter: code[20];
 }
